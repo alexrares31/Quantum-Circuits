@@ -1,8 +1,10 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
+#ifndef Complex
 #include <complex>
 #define Complex std::complex<double>
+#endif
 
 class Matrix
 {
@@ -11,7 +13,8 @@ private:
         std::ostream& os,
         const Matrix& mtrx
     );
-    Matrix kron(const Matrix& a, const Matrix& b);
+    friend Matrix kron(const Matrix& a,
+        const Matrix& b);
 protected:
     Complex* mtrx_data;
     size_t rows;
@@ -22,9 +25,9 @@ public:
     Matrix(size_t r, size_t c);
     virtual ~Matrix();
     Matrix(const Matrix& other);
-    Matrix& operator=(const Matrix& other);
+    virtual Matrix& operator=(const Matrix& other);
     Matrix(Matrix&& other);
-    Matrix& operator=(Matrix&& other);
+    virtual Matrix& operator=(Matrix&& other);
     size_t get_rows() const;
     size_t get_cols() const;
     size_t get_size() const;
@@ -33,10 +36,8 @@ public:
     Matrix operator+(const Matrix& other) const;
     Matrix operator-(const Matrix& other) const;
     Matrix operator*(const Complex& c) const;
-    Matrix operator*(const Matrix& other) const;
+    virtual Matrix operator*(const Matrix& other) const;
     Matrix operator/(const Complex& c) const;
-    // Matrix kron(const Matrix& a,
-    //     const Matrix& b) const;
     Matrix get_reduced_matrix(size_t m,
         size_t n) const;
     Complex determinant(Matrix submtrx) const;

@@ -1,4 +1,5 @@
 #include "matrix.hpp"
+#include <iostream>
 
 Matrix::Matrix() :
     rows{0},
@@ -10,14 +11,25 @@ Matrix::Matrix(size_t r, size_t c) :
     cols{c},
     mtrx_data{new Complex[r * c]} {}
 
-Matrix::~Matrix() { delete[] mtrx_data; }
+Matrix::~Matrix()
+{
+    delete[] mtrx_data;
+}
 
-size_t Matrix::get_rows() const { return rows; }
+size_t Matrix::get_rows() const
+{
+    return rows;
+}
 
-size_t Matrix::get_cols() const { return cols; }
+size_t Matrix::get_cols() const
+{
+    return cols;
+}
 
 size_t Matrix::get_size() const
-    { return rows * cols; }
+{
+    return rows * cols;
+}
 
 size_t Matrix::index(size_t m, size_t n) const
 {
@@ -27,8 +39,10 @@ size_t Matrix::index(size_t m, size_t n) const
         throw "Our of range error.\n";
 }
 
-Complex& Matrix::operator()(size_t m, size_t n)
-    const { return mtrx_data[index(m, n)]; }
+Complex& Matrix::operator()(size_t m, size_t n) const
+{
+    return mtrx_data[index(m, n)];
+}
 
 Matrix::Matrix(const Matrix& other)
 {
@@ -39,7 +53,7 @@ Matrix::Matrix(const Matrix& other)
     for (size_t i{0}; i < rows; i++)
         for (size_t j{0}; j < cols; j++)
             mtrx_data[index(i, j)] = other(i, j);
-    // std::cout << "Shallow constructor.\n";
+    std::cout << "Shallow constructor.\n";
 }
 
 Matrix& Matrix::operator=(const Matrix& other)
@@ -56,8 +70,8 @@ Matrix& Matrix::operator=(const Matrix& other)
             for (size_t j{0}; j < cols; j++)
                 mtrx_data[index(i, j)] = other(i, j);
     }
+    std::cout << "Shallow assignment.\n";
 
-    // std::cout << "Shallow assignment.\n";
     return *this;
 }
 
@@ -71,7 +85,7 @@ Matrix::Matrix(Matrix&& other)
     other.cols = 0;
     other.last_filled_row = 0;
     other.mtrx_data = nullptr;
-    // std::cout << "Deep constructor.\n";
+    std::cout << "Deep constructor.\n";
 }
 
 Matrix& Matrix::operator=(Matrix&& other)
@@ -82,7 +96,7 @@ Matrix& Matrix::operator=(Matrix&& other)
               other.last_filled_row);
     std::swap(mtrx_data, other.mtrx_data);
 
-    // std::cout << "Deep assignment!\n";
+    std::cout << "Deep assignment!\n";
     return *this;
 }
 
@@ -164,19 +178,3 @@ Matrix kron(const Matrix& a, const Matrix& b)
     
     return product;
 }
-
-// int main()
-// {
-//     Matrix q0{2, 1};
-//     Matrix q1{2, 1};
-
-//     q0(0, 0) = Complex{1, 0};
-//     q0(1, 0) = Complex{0, 0};
-
-//     q1(0, 0) = Complex{0, 0};
-//     q1(1, 0) = Complex{1, 0};
-
-//     std::cout << kron(q1, q0);
-
-//     return 0;
-// }
