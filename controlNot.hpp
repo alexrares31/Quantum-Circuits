@@ -3,10 +3,6 @@
 
 #include "matrix.hpp"
 
-#ifndef MAXQUBITS
-#define MAXQUBITS 16
-#endif
-
 class ControlNot : public Matrix
 {
 public:

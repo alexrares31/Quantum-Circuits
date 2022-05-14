@@ -11,8 +11,7 @@ class Matrix
 private:
     friend std::ostream& operator<<(
         std::ostream& os,
-        const Matrix& mtrx
-    );
+        const Matrix& mtrx);
     friend Matrix kron(const Matrix& a,
         const Matrix& b);
 protected:

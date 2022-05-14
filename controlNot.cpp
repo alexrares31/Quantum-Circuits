@@ -1,10 +1,15 @@
 #include "controlNot.hpp"
 #include "power.hpp"
 #include <bitset>
+#include <stdexcept>
 
 #ifndef Complex
 #include <complex>
 #define Complex std::complex<double>
+#endif
+
+#ifndef MAXQUBITS
+#define MAXQUBITS 8
 #endif
 
 ControlNot::ControlNot() : Matrix{4, 4}
@@ -22,7 +27,8 @@ ControlNot::ControlNot(const int& nqubits,
     if (controlq < 0 || controlq >= nqubits
     || targetq < 0 || targetq >= nqubits
     || controlq == targetq) {
-        throw "Out of range error.";
+        throw std::out_of_range(
+            "Out of range error.");
     } else {
         std::bitset<MAXQUBITS> ket;
         std::bitset<MAXQUBITS> bra;

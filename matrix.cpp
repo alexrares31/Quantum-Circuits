@@ -1,5 +1,4 @@
 #include "matrix.hpp"
-#include <iostream>
 
 Matrix::Matrix() :
     rows{0},
@@ -53,7 +52,6 @@ Matrix::Matrix(const Matrix& other)
     for (size_t i{0}; i < rows; i++)
         for (size_t j{0}; j < cols; j++)
             mtrx_data[index(i, j)] = other(i, j);
-    std::cout << "Shallow constructor.\n";
 }
 
 Matrix& Matrix::operator=(const Matrix& other)
@@ -70,7 +68,6 @@ Matrix& Matrix::operator=(const Matrix& other)
             for (size_t j{0}; j < cols; j++)
                 mtrx_data[index(i, j)] = other(i, j);
     }
-    std::cout << "Shallow assignment.\n";
 
     return *this;
 }
@@ -85,7 +82,6 @@ Matrix::Matrix(Matrix&& other)
     other.cols = 0;
     other.last_filled_row = 0;
     other.mtrx_data = nullptr;
-    std::cout << "Deep constructor.\n";
 }
 
 Matrix& Matrix::operator=(Matrix&& other)
@@ -96,7 +92,6 @@ Matrix& Matrix::operator=(Matrix&& other)
               other.last_filled_row);
     std::swap(mtrx_data, other.mtrx_data);
 
-    std::cout << "Deep assignment!\n";
     return *this;
 }
 

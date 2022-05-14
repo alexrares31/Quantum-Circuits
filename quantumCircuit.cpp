@@ -5,6 +5,7 @@
 #include "xgate.hpp"
 #include "hadamard.hpp"
 #include "controlNot.hpp"
+#include <stdexcept>
 #include <cmath>
 #include <iostream>
 #include <iomanip>
@@ -16,13 +17,19 @@
 #define Complex std::complex<double>
 #endif
 
+#ifndef MAXQUBITS
+#define MAXQUBITS 8
+#endif
+
 QuantumCircuit::QuantumCircuit()
 {
-    throw "Empty circuit.";
+    throw std::invalid_argument(
+        "Constructor expects valid argument.");
 }
 
 QuantumCircuit::QuantumCircuit(int n) :
     nqubits{n},
+    dimension{power(2, nqubits)},
     qubits{new SingleQubit[n]},
     state_vector{Matrix {power(2, n), 1}},
     state_vector_saved{false},
@@ -36,12 +43,24 @@ QuantumCircuit::~QuantumCircuit()
 
 void QuantumCircuit::initialize(
     const Complex& c1, const Complex& c2, int n)
+/*
+    Initializes the individual single qubit n as
+    following: |qn> = c1|0> + c2|1>
+    Note that if the state vector has already been 
+    built, then an error is thrown. This prevents
+    initializing single qubit states after they were
+    entangled.
+*/
 {
     if (n < 0 || n >= nqubits)
-        throw "Out of range error.";
+        throw std::out_of_range(
+            "Out of range error.");
     else
         if (state_vector_saved == true)
-            throw "State vector already saved.";
+            throw std::logic_error(
+                "Logic error: Single qubits cannot "
+                "be initialized after the state "
+                "vector is built.");
         else
             qubits[n] = SingleQubit(c1, c2);
 }
@@ -49,8 +68,7 @@ void QuantumCircuit::initialize(
 void QuantumCircuit::save_state_vector()
 /*
     Builds the 2^nqubits state vector. The function
-    should be called before applying a quantum
-    gate.
+    is called before applying a quantum gate.
 */
 {
     if (state_vector_saved == false) {
@@ -68,9 +86,13 @@ void QuantumCircuit::save_state_vector()
 }
 
 void QuantumCircuit::x(int n)
+/*
+    Applies an X gate on qubit n.
+*/
 {
     if (n < 0 || n >= nqubits) {
-        throw "Out of range error.";
+        throw std::out_of_range(
+            "Out of range error.");
     } else {
         if (state_vector_saved == false)
             save_state_vector();
@@ -94,9 +116,13 @@ void QuantumCircuit::x(int n)
 }
 
 void QuantumCircuit::h(int n)
+/*
+    Applies a Hadamard gate on qubit n.
+*/
 {
     if (n < 0 || n >= nqubits) {
-        throw "Out of range error.";
+        throw std::out_of_range(
+            "Out of range error.");
     } else {
         if (state_vector_saved == false)
             save_state_vector();
@@ -120,15 +146,20 @@ void QuantumCircuit::h(int n)
 }
 
 void QuantumCircuit::cx(int controlq, int targetq)
+/*
+    Applies a CNOT gate on the specified control
+    and target qubits.
+*/
 {
     if (controlq < 0 || controlq >= nqubits ||
         targetq < 0 || targetq >= nqubits) {
-        throw "Out of range error.";
+        throw std::out_of_range(
+            "Out of range error.");
     } else {
         if (state_vector_saved == false)
             save_state_vector();
         ControlNot cx_gate{nqubits,
-        controlq, targetq};
+            controlq, targetq};
         state_vector = cx_gate * state_vector;
         operator_mtrx = cx_gate * operator_mtrx;
     }
@@ -138,7 +169,7 @@ Matrix QuantumCircuit::get_state_vector()
 {
     if (state_vector_saved == false)
         save_state_vector();
-
+    
     return state_vector;
 }
 
@@ -147,16 +178,21 @@ Matrix QuantumCircuit::get_operator_mtrx()
     return operator_mtrx;
 }
 
-void QuantumCircuit::measure_all(
-    double error, int precision)
+void QuantumCircuit::measure_all(int precision)
+/*
+    Computes and prints the measurement probabilities 
+    for the given precision. The function also
+    collapses the state vector onto |00...00>
+*/
 {
     if (state_vector_saved == false)
         save_state_vector();
-    size_t dimension{power(2, nqubits)};
     for (size_t i{0}; i < dimension; i++) {
-        double probability;
-        probability = std::abs(state_vector(i, 0));
-        if (probability > error) {
+        double probability, threshold;
+        probability = std::pow(
+            std::abs(state_vector(i, 0)), 2);
+        threshold = std::pow(10, -precision);
+        if (probability > threshold) {
             std::string bin_string;
             bin_string = std::bitset<MAXQUBITS>(i)
                 .to_string()
@@ -168,5 +204,9 @@ void QuantumCircuit::measure_all(
                 << probability
                 << '\n';
         }
+        if (i == 0)
+            state_vector(i, 0) = Complex{1, 0};
+        else
+            state_vector(i, 0) = Complex{0, 0};
     }
 }
