@@ -1,4 +1,5 @@
 #include "matrix.hpp"
+#include <stdexcept>
 
 Matrix::Matrix() :
     rows{0},
@@ -35,7 +36,8 @@ size_t Matrix::index(size_t m, size_t n) const
     if (m >= 0 && m < rows && n >= 0 && n < cols)
         return n + m * cols;
     else
-        throw "Our of range error.\n";
+        throw std::out_of_range(
+            "Out of range error.");
 }
 
 Complex& Matrix::operator()(size_t m, size_t n) const
@@ -98,7 +100,8 @@ Matrix Matrix::operator+(const Matrix& other) const
                 sum(i, j) = mtrx_data[index(i, j)]
                     + other(i, j);
     else
-        throw "Dimensions don't match.\n";
+        throw std::out_of_range(
+            "Dimensions don't match.");
 
     return sum;
 }
@@ -124,7 +127,8 @@ Matrix Matrix::operator*(const Matrix& other) const
                         mtrx_data[index(i, k)]
                         * other(k, j);
     else
-        throw "Dimensions don't match.\n";
+        throw std::out_of_range(
+            "Dimensions don't match.");
 
     return product;
 }

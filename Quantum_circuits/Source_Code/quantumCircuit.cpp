@@ -192,6 +192,7 @@ void QuantumCircuit::measure_all(int precision)
 {
     if (state_vector_saved == false)
         save_state_vector();
+    std::cout << "Measurement probabilities:\n";
     for (size_t i{0}; i < dimension; i++) {
         double probability, threshold;
         probability = std::pow(

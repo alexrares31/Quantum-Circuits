@@ -12,12 +12,10 @@
 #define MAXQUBITS 8
 #endif
 
-ControlNot::ControlNot() : Matrix{4, 4}
+ControlNot::ControlNot()
 {
-    mtrx_data[index(0, 0)] = Complex{1, 0};
-    mtrx_data[index(1, 3)] = Complex{1, 0};
-    mtrx_data[index(2, 2)] = Complex{1, 0};
-    mtrx_data[index(3, 1)] = Complex{1, 0};
+    throw std::invalid_argument(
+        "Constructor expects valid argument.");
 }
 
 ControlNot::ControlNot(const int& nqubits,
